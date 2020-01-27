@@ -14,9 +14,9 @@ class SnakeGame:
         self.width = 20
         self.apple_pos = [random.randint(2, self.height - 2), random.randint(2, self.width - 2)]
         self.snake_head = [random.randint(5, self.height - 5), random.randint(5, self.width - 5)]
-        self.snake_position = [[self.snake_head[1] + 1, self.snake_head[0]],
-                               [self.snake_head[1] + 2, self.snake_head[0]],
-                               [self.snake_head[1] + 3, self.snake_head[0]]]
+        self.snake_position = [(self.snake_head[1] + 1, self.snake_head[0]),
+                               (self.snake_head[1] + 2, self.snake_head[0]),
+                               (self.snake_head[1] + 3, self.snake_head[0])]
         self.prev_snake_position = []
         self.score = 0
         self.prev_button_direction = 1
@@ -30,11 +30,11 @@ class SnakeGame:
         # self.obstacles_detect = np.array([[0,1], [0,1], [0,1]])
         self.obstacles_detect = np.array([0, 0, 0])  # 1, 2, 3
         self.angle_detect = []  # 4
-        self.sugg_dir = []  # 5
+        self.sugg_direct = []  # 5
         self.distance_detect = []   # 6
 
         # 1 obstacle on left, 2 obstacle in front, 3 obstacle on right
-        # 4 angle, 5 sugg_directory
+        # 4 angle, 5 sugg_directectory
 
     # initializing screenxx
     def render_init(self):
@@ -42,7 +42,9 @@ class SnakeGame:
         sc = curses.initscr()
         curses.curs_set(0)
         curses.noecho()
+        curses.resizeterm(self.height, self.width)
         win = curses.newwin(self.height, self.width, 0, 0)
+        win.refresh()
         win.keypad(1)
         win.addch(self.apple_pos[0], self.apple_pos[1], curses.ACS_DIAMOND)
         win.border(0)
@@ -53,7 +55,7 @@ class SnakeGame:
         allowed_values_x.remove(self.snake_head[0])
         allowed_values_y = list(range(1, self.width - 1))
         allowed_values_y.remove(self.snake_head[1])
-        for i in range(3):
+        for i in range(len(self.snake_position)):
             num_x = (self.snake_position[i][0])
             num_y = (self.snake_position[i][1])
             try:
@@ -66,7 +68,7 @@ class SnakeGame:
         return self.apple_pos, self.score
 
     def collision_boundaries(self):
-        if self.snake_head[0] >= self.height-1 or self.snake_head[0] <= 0 or self.snake_head[1] >= self.width-1 or self.snake_head[1] <= 0:
+        if self.snake_head[0] >= self.height or self.snake_head[0] <= 1 or self.snake_head[1] >= self.width or self.snake_head[1] <= 1:
             return 1
         else:
             return 0
@@ -116,7 +118,7 @@ class SnakeGame:
         else:
             pass
 
-    def direction(self): # direction 0=right, 1=left, 2=up, 3=down
+    def direction(self):    # direction 0=right, 1=left, 2=up, 3=down
 
         self.prev_button_direction = self.button_direction
         self.prev_snake_position = self.snake_position
@@ -144,33 +146,6 @@ class SnakeGame:
             win.addch(last[0], last[1], ' ')
 
         win.addch(self.snake_position[0][0], self.snake_position[0][1], 'Α')
-
-    def collision(self):
-        if (self.snake_position[0][0] == 0 or
-                self.snake_position[0][0] == self.width + 1 or
-                self.snake_position[0][1] == 0 or
-                self.snake_position[0][1] == self.height + 1 or
-                self.snake_position[0] in self.snake_position[1:]):
-            # sc.addstr(5, 5, 'your score is: ' * self.score)
-            # save df
-            df = pd.DataFrame(self.data)
-            file = "/Users/antonis/Desktop/PycharmProjects/deep_snake/snake_data/snake_game.csv"
-            for i in range(1000):
-                if os.path.isfile(file):
-                    i += 1
-                else 
-                    
-                
-            df.to_csv("/Users/antonis/Desktop/PycharmProjects/deep_snake/snake_data/snake_game*.csv", index=True)
-            # exit
-            sc.refresh()
-            time.sleep(2)
-            curses.endwin()
-            sys.exit()
-            # print(self.mass)
-            # print(self.height, self.width)
-        else:
-            return False
 
     def obstacle_detection(self):
         self.obstacles_detect = np.array([0, 0, 0])
@@ -215,30 +190,30 @@ class SnakeGame:
 
     def suggested_direction(self):
         if self.prev_button_direction == self.button_direction:
-            self.sugg_dir = 0
+            self.sugg_direct = 0
         elif self.button_direction == 0:
             if self.prev_button_direction == 2:
-                self.sugg_dir = 1
+                self.sugg_direct = 1
             elif self.prev_button_direction == 3:
-                self.sugg_dir = -1
+                self.sugg_direct = -1
             else: pass
         elif self.button_direction == 1:
             if self.prev_button_direction == 2:
-                self.sugg_dir = -1
+                self.sugg_direct = -1
             elif self.prev_button_direction == 3:
-                self.sugg_dir = 1
+                self.sugg_direct = 1
             else: pass
         elif self.button_direction == 2:
             if self.prev_button_direction == 0:
-                self.sugg_dir = -1
+                self.sugg_direct = -1
             elif self.prev_button_direction == 1:
-                self.sugg_dir = 1
+                self.sugg_direct = 1
             else: pass
         elif self.button_direction == 3:
             if self.prev_button_direction == 1:
-                self.sugg_dir = -1
+                self.sugg_direct = -1
             elif self.prev_button_direction == 0:
-                self.sugg_dir = 1
+                self.sugg_direct = 1
             else: pass
 
     def distance_detection(self):
@@ -256,25 +231,52 @@ class SnakeGame:
         # input
         self.obstacle_detection()   # self.obstacles_detect
         self.angle_detection()  # self.angle_detect
-        self.suggested_direction()   # self.sugg_dir
+        self.suggested_direction()   # self.sugg_direct
         # output
         self.distance_detection()   # self.distance_detect
         # save table
-        new_row = np.hstack((self.obstacles_detect, self.angle_detect, self.sugg_dir))
+        new_row = np.hstack((self.obstacles_detect, self.angle_detect, self.sugg_direct))
         self.data = np.vstack((self.data, new_row))
+
+    def collision(self):
+        if (self.snake_position[0][0] == 0 or
+                self.snake_position[0][0] == self.height - 1 or
+                self.snake_position[0][1] == 0 or
+                self.snake_position[0][1] == self.width - 1 or
+                self.snake_position[0] in self.snake_position[1:]):
+            # sc.addstr(5, 5, 'your score is: ' * self.score)
+            # save df
+            df = pd.DataFrame(self.data)
+            for i in range(100000):
+                file = ('/Users/antonis/Desktop/PycharmProjects/deep_snake/snake_data/snake_game(%d).csv' % i)
+                if os.path.isfile(file):
+                    continue
+                else:
+                    df.to_csv(file, index=True)
+                    # exit
+                    sc.refresh()
+                    time.sleep(2)
+                    curses.endwin()
+                    sys.exit()
+            # print(self.mass)
+            # print(self.height, self.width)
+        else:
+            return False
 
 
 if __name__ == "__main__":
+
     game = SnakeGame()
     game.render_init()
 
     for _ in range(1000000):
+        game.collision()
         game.keyz()
         game.direction()
         game.snake_length()
         game.add_readings()
-        game.collision()
 
+# for i in {1..2}; do python3 /Users/antonis/Desktop/PycharmProjects/deep_snake/snake\ 10.py; done
 
 
 # build dataset
