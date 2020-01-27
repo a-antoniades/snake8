@@ -23,7 +23,7 @@ class SnakeGame:
         self.button_direction = 1
         self.button_suggested = 1
         self.key = curses.KEY_RIGHT
-        self.key2 = 0
+        self.key2 = 1
         self.mass = []
 
         # input
@@ -100,8 +100,8 @@ class SnakeGame:
         else:
             pass
 
-    def rand_keyz(self):
-        next_key = random.randint(0, 3)
+    def rand_keyz(self, button):
+        next_key = button
 
         if next_key == -5:
             self.key2 = self.key2
@@ -268,6 +268,8 @@ class SnakeGame:
             return False
 
 
+
+
 if __name__ == "__main__":
 
     game = SnakeGame()
@@ -276,6 +278,7 @@ if __name__ == "__main__":
     for _ in range(1000000):
         game.collision()
         game.keyz()
+        game.rand_keyz(random.randint(0,3))
         game.direction()
         game.snake_length()
         game.add_readings()
