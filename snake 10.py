@@ -21,6 +21,7 @@ class SnakeGame:
         self.score = 0
         self.prev_button_direction = 1
         self.button_direction = 1
+        self.button_suggested = 1
         self.key = curses.KEY_RIGHT
         self.key2 = 0
         self.mass = []
@@ -151,32 +152,32 @@ class SnakeGame:
         self.obstacles_detect = np.array([0, 0, 0])
 
         if self.button_direction == 0:
-            if self.snake_position[0][1] == self.width:
+            if self.snake_position[0][1] == self.width - 2:
                 self.obstacles_detect[1] = 1
-            if self.snake_position[0][0] == self.height:
+            if self.snake_position[0][0] == self.height - 2:
                 self.obstacles_detect[0] = 1
-            if self.snake_position[0][0] == 0:
+            if self.snake_position[0][0] == 1:
                 self.obstacles_detect[2] = 1
         if self.button_direction == 1:
-            if self.snake_position[0][0] == self.height:
+            if self.snake_position[0][0] == self.height - 2:
                 self.obstacles_detect[2] = 1
-            if self.snake_position[0][1] == self.width:
+            if self.snake_position[0][1] == self.width - 2:
                 self.obstacles_detect[1] = 1
-            if self.snake_position[0][0] == 0:
+            if self.snake_position[0][0] == 1:
                 self.obstacles_detect[0] = 1
         if self.button_direction == 2:
-            if self.snake_position[0][0] == self.height:
+            if self.snake_position[0][0] == self.height - 2:
                 self.obstacles_detect[1] = 1
-            if self.snake_position[0][1] == self.width:
+            if self.snake_position[0][1] == self.width - 2:
                 self.obstacles_detect[2] = 1
-            if self.snake_position[0][1] == 0:
+            if self.snake_position[0][1] == 1:
                 self.obstacles_detect[0] = 1
         if self.button_direction == 3:
-            if self.snake_position[0][0] == 0:
+            if self.snake_position[0][0] == 1:
                 self.obstacles_detect[1] = 1
-            if self.snake_position[0][1] == self.width:
+            if self.snake_position[0][1] == self.width -2:
                 self.obstacles_detect[0] = 1
-            if self.snake_position[0][0] == 0:
+            if self.snake_position[0][0] == 1:
                 self.obstacles_detect[2] = 1
 
     def angle_detection(self):
@@ -189,32 +190,35 @@ class SnakeGame:
             self.angle_detect = 0
 
     def suggested_direction(self):
-        if self.prev_button_direction == self.button_direction:
+        if self.button_direction == self.button_suggested:
             self.sugg_direct = 0
         elif self.button_direction == 0:
-            if self.prev_button_direction == 2:
+            if self.button_suggested == 2:
                 self.sugg_direct = 1
-            elif self.prev_button_direction == 3:
+            elif self.button_suggested == 3:
                 self.sugg_direct = -1
             else: pass
         elif self.button_direction == 1:
-            if self.prev_button_direction == 2:
+            if self.button_suggested == 2:
                 self.sugg_direct = -1
-            elif self.prev_button_direction == 3:
+            elif self.button_suggested == 3:
                 self.sugg_direct = 1
             else: pass
         elif self.button_direction == 2:
-            if self.prev_button_direction == 0:
+            if self.button_suggested == 0:
                 self.sugg_direct = -1
-            elif self.prev_button_direction == 1:
+            elif self.button_suggested == 1:
                 self.sugg_direct = 1
             else: pass
         elif self.button_direction == 3:
-            if self.prev_button_direction == 1:
+            if self.button_suggested == 1:
                 self.sugg_direct = -1
-            elif self.prev_button_direction == 0:
+            elif self.button_suggested == 0:
                 self.sugg_direct = 1
-            else: pass
+            else:
+                pass
+
+        self.button_suggested = self.button_direction
 
     def distance_detection(self):
         prev_distance = ((self.prev_snake_position[0][0] ** 2 + self.prev_snake_position[0][1] ** 2) ** (1/2))
@@ -229,9 +233,9 @@ class SnakeGame:
 
     def add_readings(self):
         # input
+        self.suggested_direction()   # self.sugg_direct
         self.obstacle_detection()   # self.obstacles_detect
         self.angle_detection()  # self.angle_detect
-        self.suggested_direction()   # self.sugg_direct
         # output
         self.distance_detection()   # self.distance_detect
         # save table
@@ -279,6 +283,6 @@ if __name__ == "__main__":
 # for i in {1..2}; do python3 /Users/antonis/Desktop/PycharmProjects/deep_snake/snake\ 10.py; done
 
 
-# build dataset
+# build dataset DONE
 # next step: train neural network to learn how to survive. use regression. need new 4 column
 # dataframe
