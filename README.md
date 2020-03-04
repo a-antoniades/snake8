@@ -1,2 +1,2 @@
 # snake8
-RNN VS Evolutionary algorithms VS Simple neural networks for playing snake
+Cross Entropy vs Deep Q-Learning VS Evolutionary algorithms for solving the game of Snake
